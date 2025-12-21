@@ -23,7 +23,15 @@ Reply with the number of your choice (1-4)
 💡 You can type 'menu' anytime during your order to return here.`;
 
   sessionStore.updateState(userId, 'MAIN_MENU');
-  return { response: menuText };
+  return { 
+    response: menuText,
+    menuButtons: [
+      { icon: '📦', text: '1. Place New Order', value: '1' },
+      { icon: '📋', text: '2. View Order History', value: '2' },
+      { icon: '🔍', text: '3. View Order Details', value: '3' },
+      { icon: '🆘', text: '4. Help / Support', value: '4' }
+    ]
+  };
 }
 
 export function handleMenuSelection(userId, message) {

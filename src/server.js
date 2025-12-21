@@ -48,6 +48,7 @@ app.post('/webhook', async (req, res) => {
       success: true,
       response: result.response,
       images: result.images || [],
+      menuButtons: result.menuButtons || [],
     });
 
   } catch (error) {
@@ -116,74 +117,138 @@ app.get('/', (req, res) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Amrut-Dhara Bot</title>
       <style>
+        * {
+          box-sizing: border-box;
+        }
         body {
-          font-family: Arial, sans-serif;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           max-width: 600px;
-          margin: 50px auto;
+          margin: 20px auto;
           padding: 20px;
-          background-color: #f5f5f5;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
         }
         .chat-container {
           background: white;
-          border-radius: 10px;
-          padding: 20px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          border-radius: 20px;
+          padding: 25px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+          height: calc(100vh - 40px);
+          display: flex;
+          flex-direction: column;
         }
         h1 {
           color: #0066cc;
           text-align: center;
+          margin: 0 0 20px 0;
+          font-size: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
         }
         .messages {
-          height: 400px;
+          flex: 1;
           overflow-y: auto;
-          border: 1px solid #ddd;
+          border: 1px solid #e0e0e0;
           padding: 15px;
           margin-bottom: 20px;
-          background: #fafafa;
-          border-radius: 5px;
+          background: #f8f9fa;
+          border-radius: 10px;
         }
         .message {
-          margin-bottom: 10px;
-          padding: 10px;
-          border-radius: 5px;
+          margin-bottom: 15px;
+          padding: 12px 16px;
+          border-radius: 18px;
+          max-width: 80%;
+          word-wrap: break-word;
+          white-space: pre-wrap;
+          animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         .user-message {
-          background: #0066cc;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
+          margin-left: auto;
           text-align: right;
+          border-bottom-right-radius: 5px;
         }
         .bot-message {
-          background: #e9e9e9;
+          background: white;
           color: #333;
+          border: 1px solid #e0e0e0;
+          margin-right: auto;
+          border-bottom-left-radius: 5px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .bottle-images {
           display: flex;
-          gap: 15px;
+          flex-direction: column;
+          gap: 10px;
           margin: 15px 0;
-          justify-content: center;
         }
         .bottle-option {
-          text-align: center;
+          display: flex;
+          align-items: center;
+          gap: 15px;
           cursor: pointer;
-          padding: 10px;
-          border: 2px solid #ddd;
-          border-radius: 10px;
+          padding: 15px;
+          border: 2px solid #e0e0e0;
+          border-radius: 12px;
           transition: all 0.3s;
+          background: white;
         }
         .bottle-option:hover {
-          border-color: #0066cc;
-          transform: scale(1.05);
+          border-color: #667eea;
+          background: #f8f9ff;
+          transform: translateX(5px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
         }
         .bottle-option img {
-          width: 150px;
-          height: 200px;
+          width: 60px;
+          height: 80px;
           object-fit: contain;
           border-radius: 5px;
         }
         .bottle-option .caption {
-          margin-top: 10px;
-          font-weight: bold;
-          color: #0066cc;
+          flex: 1;
+          font-weight: 600;
+          color: #333;
+          font-size: 16px;
+        }
+        .menu-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin: 15px 0;
+        }
+        .menu-button {
+          padding: 15px 20px;
+          background: white;
+          border: 2px solid #e0e0e0;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-align: left;
+          font-size: 15px;
+          font-weight: 500;
+          color: #333;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .menu-button:hover {
+          border-color: #667eea;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          transform: translateX(5px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .menu-button .icon {
+          font-size: 20px;
         }
         .input-container {
           display: flex;
@@ -191,22 +256,35 @@ app.get('/', (req, res) => {
         }
         input {
           flex: 1;
-          padding: 10px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          font-size: 14px;
+          padding: 14px 16px;
+          border: 2px solid #e0e0e0;
+          border-radius: 25px;
+          font-size: 15px;
+          outline: none;
+          transition: all 0.3s;
+        }
+        input:focus {
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         button {
-          padding: 10px 20px;
-          background: #0066cc;
+          padding: 14px 28px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           border: none;
-          border-radius: 5px;
+          border-radius: 25px;
           cursor: pointer;
-          font-size: 14px;
+          font-size: 15px;
+          font-weight: 600;
+          transition: all 0.3s;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         button:hover {
-          background: #0052a3;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        button:active {
+          transform: translateY(0);
         }
       </style>
     </head>
@@ -246,6 +324,11 @@ app.get('/', (req, res) => {
             if (data.images && data.images.length > 0) {
               addImages(data.images);
             }
+            
+            // Display menu buttons if present
+            if (data.menuButtons && data.menuButtons.length > 0) {
+              addMenuButtons(data.menuButtons);
+            }
           } catch (error) {
             addMessage('Error: Could not connect to server', 'bot');
           }
@@ -277,7 +360,7 @@ app.get('/', (req, res) => {
             imgElement.src = img.url;
             imgElement.alt = img.caption;
             imgElement.onerror = () => {
-              imgElement.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="200"%3E%3Crect fill="%23ddd" width="150" height="200"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23999"%3E' + img.caption + '%3C/text%3E%3C/svg%3E';
+              imgElement.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="80"%3E%3Crect fill="%23e0e0e0" width="60" height="80" rx="5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="10"%3E🍾%3C/text%3E%3C/svg%3E';
             };
             
             const caption = document.createElement('div');
@@ -290,6 +373,35 @@ app.get('/', (req, res) => {
           });
           
           messages.appendChild(imagesContainer);
+          messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function addMenuButtons(options) {
+          const messages = document.getElementById('messages');
+          const menuContainer = document.createElement('div');
+          menuContainer.className = 'menu-buttons';
+          
+          options.forEach((option, index) => {
+            const button = document.createElement('div');
+            button.className = 'menu-button';
+            button.onclick = () => {
+              document.getElementById('messageInput').value = option.value;
+              sendMessage();
+            };
+            
+            const icon = document.createElement('span');
+            icon.className = 'icon';
+            icon.textContent = option.icon;
+            
+            const text = document.createElement('span');
+            text.textContent = option.text;
+            
+            button.appendChild(icon);
+            button.appendChild(text);
+            menuContainer.appendChild(button);
+          });
+          
+          messages.appendChild(menuContainer);
           messages.scrollTop = messages.scrollHeight;
         }
         

@@ -41,21 +41,21 @@ export async function handleNewOrderFlow(userId, message) {
 function startNewOrder(userId) {
   sessionStore.updateState(userId, ORDER_STATES.AWAITING_BOTTLE_TYPE);
   return {
-    response: `📦 *New Order*\n\nPlease select bottle type:\n\n1️⃣ 200ml\n2️⃣ 300ml\n3️⃣ 500ml\n\nReply with 1, 2, or 3\n\n💡 Type 'menu' anytime to go back`,
+    response: `📦 *New Order*\n\nPlease select bottle type:\n\n• 1. 200ml Bottle\n• 2. 300ml Bottle\n• 3. 500ml Bottle\n\nReply with 1, 2, or 3\n\n💡 Type 'menu' anytime to go back`,
     images: [
       {
         url: '/images/bottle.svg',
-        caption: '1️⃣ 200ml Bottle',
+        caption: '1. 200ml Bottle',
         type: '200ml'
       },
       {
         url: '/images/bottle.svg',
-        caption: '2️⃣ 300ml Bottle',
+        caption: '2. 300ml Bottle',
         type: '300ml'
       },
       {
         url: '/images/bottle.svg',
-        caption: '3️⃣ 500ml Bottle',
+        caption: '3. 500ml Bottle',
         type: '500ml'
       }
     ],

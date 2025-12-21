@@ -18,7 +18,9 @@ Please select an option:
 3️⃣ View Order Details
 4️⃣ Help / Support
 
-Reply with the number of your choice (1-4):`;
+Reply with the number of your choice (1-4)
+
+💡 You can type 'menu' anytime during your order to return here.`;
 
   sessionStore.updateState(userId, 'MAIN_MENU');
   return { response: menuText };
@@ -44,7 +46,7 @@ export function handleMenuSelection(userId, message) {
     case MENU_OPTIONS.ORDER_DETAILS:
       sessionStore.updateState(userId, 'AWAITING_ORDER_ID');
       return { 
-        response: 'Please enter the Order ID you want to view:',
+        response: 'Please enter the Order ID you want to view:\n\n💡 Type "menu" to return to main menu',
         action: 'ORDER_DETAILS',
       };
 
@@ -79,7 +81,7 @@ ${process.env.SUPPORT_CONTACT || '+91-XXXXXXXXXX'}
 
 Business Hours: Mon-Sat, 9 AM - 6 PM
 
-Type 'menu' to return to the main menu.`;
+💡 Type 'menu' to return to the main menu.`;
 }
 
 export function isMenuCommand(message) {

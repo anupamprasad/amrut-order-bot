@@ -41,7 +41,7 @@ export async function handleNewOrderFlow(userId, message) {
 function startNewOrder(userId) {
   sessionStore.updateState(userId, ORDER_STATES.AWAITING_BOTTLE_TYPE);
   return {
-    response: `📦 *New Order*\n\nPlease select bottle type:\n\n1️⃣ 200ml\n2️⃣ 300ml\n3️⃣ 500ml\n\nReply with 1, 2, or 3:`,
+    response: `📦 *New Order*\n\nPlease select bottle type:\n\n1️⃣ 200ml\n2️⃣ 300ml\n3️⃣ 500ml\n\nReply with 1, 2, or 3\n\n💡 Type 'menu' anytime to go back`,
     images: [
       {
         url: '/images/bottle.svg',
@@ -82,7 +82,7 @@ function handleBottleTypeInput(userId, message) {
   sessionStore.updateState(userId, ORDER_STATES.AWAITING_QUANTITY);
 
   return {
-    response: `✅ Selected: ${bottleType}\n\nPlease enter the quantity (number of bottles):`,
+    response: `✅ Selected: ${bottleType}\n\nPlease enter the quantity (number of bottles):\n\n💡 Type 'menu' to cancel and return to main menu`,
   };
 }
 
@@ -105,7 +105,7 @@ function handleQuantityInput(userId, message) {
   sessionStore.updateState(userId, ORDER_STATES.AWAITING_ADDRESS);
 
   return {
-    response: `✅ Quantity: ${quantity} bottles\n\nPlease enter the delivery address:`,
+    response: `✅ Quantity: ${quantity} bottles\n\nPlease enter the delivery address:\n\n💡 Type 'menu' to cancel and return to main menu`,
   };
 }
 
@@ -127,7 +127,7 @@ function handleAddressInput(userId, message) {
   const minDate = tomorrow.toISOString().split('T')[0];
 
   return {
-    response: `✅ Address saved\n\nPlease enter preferred delivery date (YYYY-MM-DD format):\n\nExample: ${minDate}\nNote: Minimum 1 day advance notice required.`,
+    response: `✅ Address saved\n\nPlease enter preferred delivery date (YYYY-MM-DD format):\n\nExample: ${minDate}\nNote: Minimum 1 day advance notice required.\n\n💡 Type 'menu' to cancel and return to main menu`,
   };
 }
 

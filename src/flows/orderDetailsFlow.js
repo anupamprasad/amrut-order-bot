@@ -49,7 +49,7 @@ ${statusEmoji} Status: ${order.order_status}
 📍 Delivery Address: ${order.delivery_address}
 🚚 Preferred Delivery Date: ${deliveryDate}
 
-Type "menu" to return to the main menu.`;
+💡 Type "menu" to return to the main menu.`;
 
   return { response };
 }

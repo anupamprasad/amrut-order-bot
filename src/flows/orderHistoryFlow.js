@@ -31,7 +31,7 @@ export async function handleOrderHistory(userId) {
   });
 
   response += 'To view details of a specific order, select option 3 from the main menu.\n\n';
-  response += 'Type "menu" to return to the main menu.';
+  response += '💡 Type "menu" to return to the main menu.';
 
   return { response };
 }

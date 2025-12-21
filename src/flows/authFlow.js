@@ -94,7 +94,7 @@ async function handlePasswordInput(userId, password) {
   sessionStore.clearTempData(userId);
 
   return {
-    response: `✅ Authentication successful!\n\nWelcome back, ${email}!`,
+    response: `✅ Authentication successful!\n\nWelcome back, ${email}!\n\n📋 Type 'menu' anytime to see available options.`,
     authenticated: true,
     supabaseUserId: result.user.id,
   };

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "🔧 Amrut-Dhara Bot - Database Fix Script"
+echo "=========================================="
+echo ""
+echo "This script will help you fix the foreign key constraint error."
+echo ""
+echo "Steps to fix:"
+echo ""
+echo "1. Open your Supabase Dashboard at: https://app.supabase.com"
+echo "2. Go to SQL Editor"
+echo "3. Copy the contents of: database/fix-user-policy.sql"
+echo "4. Paste and click 'Run'"
+echo ""
+echo "The migration file is located at:"
+echo "$(pwd)/database/fix-user-policy.sql"
+echo ""
+echo "Opening the file for you..."
+echo ""
+
+cat database/fix-user-policy.sql
+
+echo ""
+echo "=========================================="
+echo ""
+echo "After running the SQL script in Supabase:"
+echo "1. Restart this bot server"
+echo "2. Try logging in again"
+echo "3. The error should be fixed!"
+echo ""

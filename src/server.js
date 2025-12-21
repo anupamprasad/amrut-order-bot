@@ -16,8 +16,14 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve static files (images)
+// Serve static files (images) - compatible with Vercel
 app.use('/images', express.static(path.join(__dirname, '../public/images')));
+app.use(express.static('public'));
+
+// Serve bottle.svg directly
+app.get('/images/bottle.svg', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/images/bottle.svg'));
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {

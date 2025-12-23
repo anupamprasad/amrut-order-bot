@@ -141,48 +141,6 @@ export async function getOrderById(orderId, userId) {
   return { success: true, order: data };
 }
 
-// Helper function to send SMS via Textbelt
-async function sendSMS(phoneNumber, message) {
-  try {
-    if (!phoneNumber || phoneNumber === 'Not provided') {
-      console.log('⚠️  No phone number available for SMS');
-      return { success: false, reason: 'No phone number' };
-    }
-
-    // Use Textbelt API key if provided, otherwise use free tier
-    const apiKey = process.env.TEXTBELT_API_KEY || 'textbelt';
-    const apiUrl = 'https://textbelt.com/text';
-
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        phone: phoneNumber,
-        message: message,
-        key: apiKey,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      console.log(`✅ SMS sent to ${phoneNumber}`);
-      if (result.quotaRemaining !== undefined) {
-        console.log(`📊 Textbelt quota remaining: ${result.quotaRemaining}`);
-      }
-      return { success: true, result };
-    } else {
-      console.error(`❌ SMS failed: ${result.error}`);
-      return { success: false, error: result.error };
-    }
-  } catch (error) {
-    console.error('SMS sending error:', error);
-    return { success: false, error: error.message };
-  }
-}
-
 // Helper function to send order notification
 export async function sendOrderNotification(order, userEmail) {
   try {
@@ -217,12 +175,6 @@ Thank you for your order!
 - ${process.env.BOT_NAME || 'Amrut-Dhara Water Solutions'}`;
       
       await sendWhatsAppMessage(userPhone, whatsappMessage);
-    }
-
-    // Send SMS notification
-    if (userPhone && process.env.ENABLE_SMS_NOTIFICATIONS !== 'false') {
-      const smsMessage = `${process.env.BOT_NAME || 'Amrut-Dhara'}: Order ${order.id.substring(0, 8)} confirmed! ${order.quantity}x ${order.bottle_type} to be delivered on ${order.preferred_delivery_date}. Thank you!`;
-      await sendSMS(userPhone, smsMessage);
     }
 
     // Get Resend client and send email notification

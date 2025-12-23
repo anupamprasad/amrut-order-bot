@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { processMessage } from './messageHandler.js';
+import { initWhatsApp, closeWhatsApp } from './utils/whatsapp.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -497,9 +498,35 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Amrut-Dhara Bot server running on port ${PORT}`);
   console.log(`📱 Web interface: http://localhost:${PORT}`);
   console.log(`🔗 Webhook endpoint: http://localhost:${PORT}/webhook`);
   console.log(`📞 WhatsApp webhook: http://localhost:${PORT}/webhook/whatsapp`);
+  
+  // Initialize WhatsApp if enabled
+  if (process.env.ENABLE_WHATSAPP_NOTIFICATIONS !== 'false') {
+    console.log('\n📲 Initializing WhatsApp connection...');
+    try {
+      await initWhatsApp();
+    } catch (error) {
+      console.error('⚠️  WhatsApp initialization failed:', error.message);
+      console.log('💡 The bot will continue to work without WhatsApp notifications');
+    }
+  } else {
+    console.log('⚠️  WhatsApp notifications disabled');
+  }
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n👋 Shutting down gracefully...');
+  await closeWhatsApp();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('\n👋 Shutting down gracefully...');
+  await closeWhatsApp();
+  process.exit(0);
 });

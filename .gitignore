@@ -5,3 +5,6 @@ node_modules/
 dist/
 coverage/
 .vscode/
+
+# WhatsApp session data
+auth_info/

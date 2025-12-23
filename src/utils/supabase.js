@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { sendWhatsAppMessage } from './whatsapp.js';
 
 dotenv.config();
 
@@ -202,6 +203,21 @@ export async function sendOrderNotification(order, userEmail) {
     };
 
     console.log('📧 Order Notification:', orderDetails);
+
+    // Send WhatsApp notification (if enabled)
+    if (userPhone && process.env.ENABLE_WHATSAPP_NOTIFICATIONS !== 'false') {
+      const whatsappMessage = `🎉 *Order Confirmed!*
+
+Order ID: #${order.id.substring(0, 8)}
+📦 ${order.quantity}x ${order.bottle_type}
+📅 Delivery: ${order.preferred_delivery_date}
+📍 Address: ${order.delivery_address}
+
+Thank you for your order!
+- ${process.env.BOT_NAME || 'Amrut-Dhara Water Solutions'}`;
+      
+      await sendWhatsAppMessage(userPhone, whatsappMessage);
+    }
 
     // Send SMS notification
     if (userPhone && process.env.ENABLE_SMS_NOTIFICATIONS !== 'false') {

@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
+import { Resend } from 'resend';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+// Initialize Resend client
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -118,4 +122,148 @@ export async function getOrderById(orderId, userId) {
   }
 
   return { success: true, order: data };
+}
+
+// Helper function to send order notification
+export async function sendOrderNotification(order, userEmail) {
+  try {
+    // Format order details
+    const orderDetails = {
+      orderId: order.id,
+      bottleType: order.bottle_type,
+      quantity: order.quantity,
+      deliveryAddress: order.delivery_address,
+      deliveryDate: order.preferred_delivery_date,
+      orderDate: new Date(order.created_at).toLocaleDateString(),
+      userEmail: userEmail,
+    };
+
+    console.log('📧 Order Notification:', orderDetails);
+
+    // Send email notification via Resend
+    if (resend && process.env.NOTIFICATION_EMAIL_FROM) {
+      // Send confirmation email to customer
+      await resend.emails.send({
+        from: process.env.NOTIFICATION_EMAIL_FROM,
+        to: userEmail,
+        subject: `Order Confirmation - ${order.id.substring(0, 8)}`,
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+              .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+              .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+              .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+              .detail-label { font-weight: bold; color: #667eea; }
+              .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🎉 Order Confirmed!</h1>
+              </div>
+              <div class="content">
+                <p>Dear Customer,</p>
+                <p>Thank you for your order! We're pleased to confirm that we've received your order and it's being processed.</p>
+                
+                <div class="order-details">
+                  <h2>Order Details</h2>
+                  <div class="detail-row">
+                    <span class="detail-label">Order ID:</span>
+                    <span>${order.id}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Bottle Type:</span>
+                    <span>${order.bottle_type}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Quantity:</span>
+                    <span>${order.quantity} bottles</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Delivery Address:</span>
+                    <span>${order.delivery_address}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Preferred Delivery Date:</span>
+                    <span>${order.preferred_delivery_date}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Order Date:</span>
+                    <span>${new Date(order.created_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                
+                <p>Our team will contact you shortly to confirm the delivery details.</p>
+                
+                <div class="footer">
+                  <p>Thank you for choosing Amrut-Dhara Water Solutions!</p>
+                  <p>If you have any questions, please don't hesitate to contact us.</p>
+                </div>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+      });
+
+      // Send notification to admin if configured
+      if (process.env.ADMIN_EMAIL) {
+        await resend.emails.send({
+          from: process.env.NOTIFICATION_EMAIL_FROM,
+          to: process.env.ADMIN_EMAIL,
+          subject: `New Order Received - ${order.id.substring(0, 8)}`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #2d3748; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+                .content { background: #f7fafc; padding: 20px; border-radius: 0 0 8px 8px; }
+                .order-info { background: white; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #667eea; }
+                .label { font-weight: bold; color: #667eea; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h2>🔔 New Order Alert</h2>
+                </div>
+                <div class="content">
+                  <p>A new order has been placed:</p>
+                  <div class="order-info">
+                    <p><span class="label">Order ID:</span> ${order.id}</p>
+                    <p><span class="label">Customer Email:</span> ${userEmail}</p>
+                    <p><span class="label">Bottle Type:</span> ${order.bottle_type}</p>
+                    <p><span class="label">Quantity:</span> ${order.quantity} bottles</p>
+                    <p><span class="label">Delivery Address:</span> ${order.delivery_address}</p>
+                    <p><span class="label">Preferred Delivery Date:</span> ${order.preferred_delivery_date}</p>
+                    <p><span class="label">Order Time:</span> ${new Date(order.created_at).toLocaleString()}</p>
+                  </div>
+                  <p><strong>Action Required:</strong> Please contact the customer to confirm delivery details.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `,
+        });
+      }
+
+      console.log('✅ Email notifications sent successfully');
+    } else {
+      console.log('⚠️  Email not configured. Set RESEND_API_KEY and NOTIFICATION_EMAIL_FROM in .env');
+    }
+    
+    return { success: true, notification: orderDetails };
+  } catch (error) {
+    console.error('Notification error:', error);
+    return { success: false, error: error.message };
+  }
 }

@@ -1,5 +1,5 @@
 import { sessionStore } from '../utils/sessionStore.js';
-import { createOrder } from '../utils/supabase.js';
+import { createOrder, sendOrderNotification } from '../utils/supabase.js';
 import { getAuthenticatedUserId } from './authFlow.js';
 
 const ORDER_STATES = {
@@ -220,8 +220,15 @@ async function handleConfirmation(userId, message) {
     };
   }
 
+  // Send order notification
+  const userEmail = sessionStore.getSession(userId)?.email;
+  if (userEmail) {
+    await sendOrderNotification(result.order, userEmail);
+  }
+
   return {
-    response: `✅ *Order Placed Successfully!*\n\n📋 Order ID: ${result.order.id}\n\nYour order has been received and will be processed shortly. You will receive a confirmation once it's approved.\n\nType "menu" to return to the main menu.`,
+    response: `✅ *Order Placed Successfully!*\n\n📋 Order ID: ${result.order.id.substring(0, 8)}...\n📧 Confirmation sent to: ${userEmail}\n\nYour order has been received and will be processed shortly. You will receive updates via email.\n\n💡 Type "menu" to return to the main menu.`,
     showMenu: true,
+    notification: true,
   };
 }

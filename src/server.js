@@ -49,6 +49,7 @@ app.post('/webhook', async (req, res) => {
       response: result.response,
       images: result.images || [],
       menuButtons: result.menuButtons || [],
+      notification: result.notification || false,
     });
 
   } catch (error) {
@@ -286,6 +287,50 @@ app.get('/', (req, res) => {
         button:active {
           transform: translateY(0);
         }
+        .notification-toast {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 12px;
+          box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-weight: 600;
+          animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+          z-index: 1000;
+        }
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+        }
+        .notification-icon {
+          font-size: 24px;
+          animation: bounce 0.6s ease-in-out;
+        }
+        @keyframes bounce {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+        }
       </style>
     </head>
     <body>
@@ -329,9 +374,28 @@ app.get('/', (req, res) => {
             if (data.menuButtons && data.menuButtons.length > 0) {
               addMenuButtons(data.menuButtons);
             }
+            
+            // Show notification if present
+            if (data.notification) {
+              showNotification('Order placed successfully! Check your email for confirmation.');
+            }
           } catch (error) {
             addMessage('Error: Could not connect to server', 'bot');
           }
+        }
+        
+        function showNotification(message) {
+          const notification = document.createElement('div');
+          notification.className = 'notification-toast';
+          notification.innerHTML = `
+            <span class="notification-icon">\u2705</span>
+            <span>${message}</span>
+          `;
+          document.body.appendChild(notification);
+          
+          setTimeout(() => {
+            notification.remove();
+          }, 3000);
         }
         
         function addMessage(text, type) {

@@ -387,10 +387,10 @@ app.get('/', (req, res) => {
         function showNotification(message) {
           const notification = document.createElement('div');
           notification.className = 'notification-toast';
-          notification.innerHTML = `
-            <span class="notification-icon">\u2705</span>
-            <span>${message}</span>
-          `;
+          notification.innerHTML = \`
+            <span class="notification-icon">✅</span>
+            <span>\${message}</span>
+          \`;
           document.body.appendChild(notification);
           
           setTimeout(() => {

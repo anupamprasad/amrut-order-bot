@@ -1,11 +1,27 @@
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Initialize Resend client
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+// Initialize Resend client (lazy loading to avoid errors if not configured)
+let resend = null;
+async function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    return null;
+  }
+  
+  if (!resend) {
+    try {
+      const { Resend } = await import('resend');
+      resend = new Resend(process.env.RESEND_API_KEY);
+    } catch (error) {
+      console.error('Failed to initialize Resend:', error);
+      return null;
+    }
+  }
+  
+  return resend;
+}
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -140,10 +156,12 @@ export async function sendOrderNotification(order, userEmail) {
 
     console.log('📧 Order Notification:', orderDetails);
 
-    // Send email notification via Resend
-    if (resend && process.env.NOTIFICATION_EMAIL_FROM) {
+    // Get Resend client and send email notification
+    const resendClient = await getResendClient();
+    
+    if (resendClient && process.env.NOTIFICATION_EMAIL_FROM) {
       // Send confirmation email to customer
-      await resend.emails.send({
+      await resendClient.emails.send({
         from: process.env.NOTIFICATION_EMAIL_FROM,
         to: userEmail,
         subject: `Order Confirmation - ${order.id.substring(0, 8)}`,
@@ -214,7 +232,7 @@ export async function sendOrderNotification(order, userEmail) {
 
       // Send notification to admin if configured
       if (process.env.ADMIN_EMAIL) {
-        await resend.emails.send({
+        await resendClient.emails.send({
           from: process.env.NOTIFICATION_EMAIL_FROM,
           to: process.env.ADMIN_EMAIL,
           subject: `New Order Received - ${order.id.substring(0, 8)}`,

@@ -22,18 +22,14 @@ export async function initWhatsApp() {
   connectionPromise = (async () => {
     try {
       const { state, saveCreds } = await useMultiFileAuthState('auth_info');
-      const { version } = await fetchLatestBaileysVersion();
 
       sock = makeWASocket({
-        version,
-        auth: {
-          creds: state.creds,
-          keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
-        },
+        auth: state,
         printQRInTerminal: false, // We'll handle QR display ourselves
-        logger: pino({ level: process.env.NODE_ENV === 'development' ? 'info' : 'silent' }),
-        browser: ['Amrut-Dhara Bot', 'Chrome', '10.0'],
-        getMessage: async () => undefined,
+        logger: pino({ level: 'silent' }),
+        browser: ['Amrut-Dhara', 'Safari', '15.0'],
+        syncFullHistory: false,
+        markOnlineOnConnect: true,
       });
 
       // Handle connection updates
@@ -53,16 +49,29 @@ export async function initWhatsApp() {
             ? lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut
             : true;
 
-          console.log('🔴 WhatsApp disconnected. Reconnecting:', shouldReconnect);
+          const statusCode = lastDisconnect?.error instanceof Boom 
+            ? lastDisconnect.error.output.statusCode 
+            : 0;
+
+          console.log('🔴 WhatsApp disconnected.');
+          console.log('   Status code:', statusCode);
+          console.log('   Reason:', DisconnectReason[statusCode] || 'Unknown');
+          console.log('   Will reconnect:', shouldReconnect);
+          
           isConnected = false;
 
           if (shouldReconnect) {
             connectionPromise = null;
             setTimeout(() => initWhatsApp(), 5000); // Reconnect after 5 seconds
+          } else {
+            console.log('⚠️  Not reconnecting. You may need to scan QR code again.');
+            console.log('   Delete auth_info folder and restart: rm -rf auth_info');
           }
         } else if (connection === 'open') {
           console.log('✅ WhatsApp connected successfully!');
           isConnected = true;
+        } else if (connection === 'connecting') {
+          console.log('🔄 Connecting to WhatsApp...');
         }
       });
 

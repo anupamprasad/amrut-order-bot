@@ -316,8 +316,13 @@ Thank you for your order!
     }
 
     // Send SMS alert to admin
+    console.log('🔍 SMS Debug - twilioClient:', !!twilioClient);
+    console.log('🔍 SMS Debug - ADMIN_PHONE_NUMBER:', process.env.ADMIN_PHONE_NUMBER);
+    console.log('🔍 SMS Debug - TWILIO_PHONE_NUMBER:', process.env.TWILIO_PHONE_NUMBER);
+    
     if (twilioClient && process.env.ADMIN_PHONE_NUMBER && process.env.TWILIO_PHONE_NUMBER) {
       try {
+        console.log('📤 Attempting to send SMS alert...');
         const smsMessage = `🔔 New Order Alert!
 
 Order ID: ${order.id.substring(0, 8)}
@@ -336,9 +341,13 @@ Address: ${order.delivery_address.substring(0, 50)}${order.delivery_address.leng
         console.log('✅ Admin SMS alert sent:', message.sid);
       } catch (smsError) {
         console.error('❌ SMS alert failed:', smsError.message);
+        console.error('❌ SMS error details:', smsError);
       }
     } else {
       console.log('⚠️  SMS alerts not configured. Set TWILIO credentials in .env');
+      console.log('   twilioClient exists:', !!twilioClient);
+      console.log('   ADMIN_PHONE_NUMBER set:', !!process.env.ADMIN_PHONE_NUMBER);
+      console.log('   TWILIO_PHONE_NUMBER set:', !!process.env.TWILIO_PHONE_NUMBER);
     }
     
     return { success: true, notification: orderDetails };

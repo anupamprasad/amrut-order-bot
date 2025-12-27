@@ -2,7 +2,7 @@
 
 This document outlines the **technical task list** and **conversation flow (wireframe)** for a chatbot that accepts water bottle orders for the Amrut-Dhara B2B product via chat.
 
-**Last Updated:** December 23, 2025
+**Last Updated:** December 27, 2025
 
 ---
 
@@ -16,9 +16,11 @@ This document outlines the **technical task list** and **conversation flow (wire
 - ✅ Session management (in-memory)
 - ✅ Email notifications (Resend)
 - ✅ WhatsApp notifications (Baileys)
+- ✅ SMS notifications (Twilio) - Admin alerts
 - ✅ Web interface with modern UI
 - ✅ Vercel deployment configuration
 - ✅ GitHub repository
+- ✅ Database triggers for SMS (optional)
 
 ### Pending Features
 - ⏳ WhatsApp Business API integration (currently using Baileys)
@@ -51,7 +53,7 @@ To allow B2B customers to place water bottle orders, view order history, and che
 * **NLP / Logic:** ✅ Rule-based conversation flows
 * **Backend:** ✅ Supabase (Auth + PostgreSQL + RLS)
 * **Hosting:** ✅ Vercel (serverless)
-* **Notifications:** ✅ Resend (email) + Baileys (WhatsApp)
+* **Notifications:** ✅ Resend (email) + Baileys (WhatsApp) + Twilio (SMS)
 * **Repository:** ✅ GitHub (anupamprasad/amrut-order-bot)
 
 ---
@@ -150,7 +152,7 @@ Navigation hints: "Type 'menu' anytime to return"
 5. ✅ Bot: "Enter preferred delivery date (YYYY-MM-DD)"
 6. ✅ Bot: Shows order summary with confirmation
 7. ✅ Bot: "✅ Order placed successfully!"
-8. ✅ Sends email + WhatsApp notifications
+8. ✅ Sends email + WhatsApp + SMS notifications
 
 ### ✅ Completed Technical Tasks
 
@@ -161,7 +163,7 @@ Navigation hints: "Type 'menu' anytime to return"
 * ✅ UUID order ID generation
 * ✅ Confirmation with order details
 * ✅ Image support (bottle.svg)
-* ✅ Multi-channel notifications
+* ✅ Multi-channel notifications (email, WhatsApp, SMS)
 
 ---
 
@@ -254,11 +256,30 @@ Bot: "For support, contact Amrut-Dhara team at +91-9810554738"
 * ✅ Auto-reconnection
 * ✅ Free and open-source
 
+**SMS Notifications (Twilio)**
+* ✅ Admin SMS alerts on new orders
+* ✅ Application-based implementation (ready to use)
+* ✅ Database trigger approach (optional, for high-reliability)
+* ✅ Formatted order details in SMS
+* ✅ Queue-based alternative (no pg_net required)
+* ✅ Test script for validation (test-sms.js)
+* ✅ Free trial: $15 credit (~500-1900 SMS)
+* ✅ Comprehensive setup guide (SMS_ALERTS_SETUP.md)
+
 ### Configuration
 * `RESEND_API_KEY` - Email service
 * `NOTIFICATION_EMAIL_FROM` - Sender email
 * `ADMIN_EMAIL` - Admin notifications
 * `ENABLE_WHATSAPP_NOTIFICATIONS` - WhatsApp toggle
+* `TWILIO_ACCOUNT_SID` - Twilio account identifier
+* `TWILIO_AUTH_TOKEN` - Twilio authentication token
+* `TWILIO_PHONE_NUMBER` - Twilio sender number
+* `ADMIN_PHONE_NUMBER` - SMS recipient (admin)
+
+### SMS Implementation Options
+1. **Application Code (Recommended)**: SMS sent via `sendOrderNotification()` function
+2. **Database Trigger with pg_net**: Uses Supabase edge function (advanced)
+3. **Notification Queue**: Table-based queue without pg_net extension
 
 ---
 
@@ -293,6 +314,8 @@ Bot: "For support, contact Amrut-Dhara team at +91-9810554738"
 * ✅ Database constraints tested
 * ✅ Email notifications tested
 * ✅ WhatsApp integration tested
+* ✅ SMS notifications tested (Twilio)
+* ✅ SMS test utility created and validated
 
 ### ⏳ Pending Testing
 * ⏳ Load testing for concurrent users
@@ -376,6 +399,7 @@ Bot: "For support, contact Amrut-Dhara team at +91-9810554738"
 ### Notifications
 * **Email:** Resend API
 * **WhatsApp:** Baileys (open-source)
+* **SMS:** Twilio API
 
 ### Deployment
 * **Platform:** Vercel (serverless)
@@ -391,6 +415,7 @@ Bot: "For support, contact Amrut-Dhara team at +91-9810554738"
 * @hapi/boom
 * pino
 * qrcode-terminal
+* twilio
 
 ---
 
@@ -418,7 +443,9 @@ Bot: "For support, contact Amrut-Dhara team at +91-9810554738"
 * ✅ RESEND_SETUP.md - Email configuration guide
 * ✅ BAILEYS_SETUP.md - WhatsApp setup guide
 * ✅ NOTIFICATIONS.md - Notification integration options
+* ✅ SMS_ALERTS_SETUP.md - Twilio SMS configuration guide
 * ✅ technical-todo.md - This file
+* ✅ test-sms.js - SMS testing utility
 
 ---
 

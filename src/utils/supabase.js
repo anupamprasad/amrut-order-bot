@@ -4,6 +4,21 @@ import { sendWhatsAppMessage } from './whatsapp.js';
 
 dotenv.config();
 
+// Initialize Twilio client for SMS alerts
+let twilioClient = null;
+if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+  try {
+    const twilio = await import('twilio');
+    twilioClient = twilio.default(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+    console.log('✅ Twilio SMS client initialized');
+  } catch (error) {
+    console.error('⚠️  Twilio initialization failed:', error.message);
+  }
+}
+
 // Initialize Resend client (lazy loading to avoid errors if not configured)
 let resend = null;
 async function getResendClient() {
@@ -298,6 +313,32 @@ Thank you for your order!
       console.log('✅ Email notifications sent successfully');
     } else {
       console.log('⚠️  Email not configured. Set RESEND_API_KEY and NOTIFICATION_EMAIL_FROM in .env');
+    }
+
+    // Send SMS alert to admin
+    if (twilioClient && process.env.ADMIN_PHONE_NUMBER && process.env.TWILIO_PHONE_NUMBER) {
+      try {
+        const smsMessage = `🔔 New Order Alert!
+
+Order ID: ${order.id.substring(0, 8)}
+Bottle: ${order.bottle_type}
+Qty: ${order.quantity}
+Date: ${order.preferred_delivery_date}
+Customer: ${userEmail}
+Address: ${order.delivery_address.substring(0, 50)}${order.delivery_address.length > 50 ? '...' : ''}`;
+
+        const message = await twilioClient.messages.create({
+          body: smsMessage,
+          from: process.env.TWILIO_PHONE_NUMBER,
+          to: process.env.ADMIN_PHONE_NUMBER,
+        });
+
+        console.log('✅ Admin SMS alert sent:', message.sid);
+      } catch (smsError) {
+        console.error('❌ SMS alert failed:', smsError.message);
+      }
+    } else {
+      console.log('⚠️  SMS alerts not configured. Set TWILIO credentials in .env');
     }
     
     return { success: true, notification: orderDetails };

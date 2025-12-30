@@ -87,7 +87,7 @@ To allow B2B customers to place water bottle orders, view order history, and che
 * bottle_type (200ml / 300ml / 500ml)
 * quantity (INTEGER)
 * delivery_address (TEXT)
-* preferred_delivery_date (DATE)
+* delivery_date (DATE)
 * order_status (Pending / Confirmed / Delivered)
 * created_at (TIMESTAMP)
 
@@ -506,7 +506,7 @@ To allow B2B customers to place water bottle orders, view order history, and che
 * bottle_type
 * quantity
 * delivery_address
-* preferred_delivery_date
+* delivery_date
 * order_status (Pending / Confirmed / Delivered)
 * created_at
 

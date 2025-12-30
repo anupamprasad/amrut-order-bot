@@ -46,7 +46,7 @@ To send actual emails, integrate one of these services:
          <p>Order ID: ${order.id}</p>
          <p>Bottle Type: ${order.bottle_type}</p>
          <p>Quantity: ${order.quantity}</p>
-         <p>Delivery Date: ${order.preferred_delivery_date}</p>
+         <p>Delivery Date: ${order.delivery_date}</p>
          <p>Address: ${order.delivery_address}</p>
        `,
      };
@@ -183,7 +183,7 @@ node -e "
     bottle_type: '500ml',
     quantity: 10,
     delivery_address: 'Test Address',
-    preferred_delivery_date: '2025-12-25'
+    delivery_date: '2025-12-25'
   }, 'test@example.com');
 "
 ```

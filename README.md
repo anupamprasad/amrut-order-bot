@@ -212,7 +212,7 @@ Bot: ✅ Order Placed Successfully!
 - `bottle_type` (Text: '20L' or '10L')
 - `quantity` (Integer)
 - `delivery_address` (Text)
-- `preferred_delivery_date` (Date)
+- `delivery_date` (Date)
 - `order_status` (Text: 'Pending', 'Confirmed', 'Delivered')
 - `created_at` (Timestamp)
 

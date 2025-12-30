@@ -49,7 +49,7 @@ Date: %s',
       substring(NEW.id::text, 1, 8),
       NEW.bottle_type,
       NEW.quantity,
-      NEW.preferred_delivery_date
+      NEW.delivery_date
     )
   );
 

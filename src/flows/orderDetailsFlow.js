@@ -34,7 +34,7 @@ async function fetchOrderDetails(userId, orderId) {
 
   const order = result.order;
   const createdDate = new Date(order.created_at).toLocaleDateString();
-  const deliveryDate = new Date(order.preferred_delivery_date).toLocaleDateString();
+  const deliveryDate = new Date(order.delivery_date).toLocaleDateString();
   const statusEmoji = getStatusEmoji(order.order_status);
 
   const response = `

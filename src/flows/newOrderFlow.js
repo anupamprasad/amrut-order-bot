@@ -201,11 +201,11 @@ async function handleConfirmation(userId, message) {
   const supabaseUserId = getAuthenticatedUserId(userId);
   
   const orderData = {
-    user_id: supabaseUserId,
+    user_id: userId,
     bottle_type: sessionStore.getTempData(userId, 'bottleType'),
     quantity: sessionStore.getTempData(userId, 'quantity'),
     delivery_address: sessionStore.getTempData(userId, 'deliveryAddress'),
-    preferred_delivery_date: sessionStore.getTempData(userId, 'deliveryDate'),
+    delivery_date: sessionStore.getTempData(userId, 'deliveryDate'),
     order_status: 'Pending',
   };
 

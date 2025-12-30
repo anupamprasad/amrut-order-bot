@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS orders (
     bottle_type TEXT NOT NULL CHECK (bottle_type IN ('200ml', '300ml', '500ml')),
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     delivery_address TEXT NOT NULL,
-    preferred_delivery_date DATE NOT NULL,
+    delivery_date DATE NOT NULL,
     order_status TEXT NOT NULL DEFAULT 'Pending' CHECK (order_status IN ('Pending', 'Confirmed', 'Delivered')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

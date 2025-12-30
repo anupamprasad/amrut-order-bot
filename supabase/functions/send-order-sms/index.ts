@@ -16,7 +16,7 @@ serve(async (req) => {
     console.log('New order received:', order.id)
 
     // Prepare SMS message
-    const message = `🔔 New Order Alert!\n\nOrder ID: ${order.id.substring(0, 8)}\nBottle: ${order.bottle_type}\nQty: ${order.quantity}\nDate: ${order.preferred_delivery_date}\nAddress: ${order.delivery_address.substring(0, 50)}...`
+    const message = `🔔 New Order Alert!\n\nOrder ID: ${order.id.substring(0, 8)}\nBottle: ${order.bottle_type}\nQty: ${order.quantity}\nDate: ${order.delivery_date}\nAddress: ${order.delivery_address.substring(0, 50)}...`
 
     // Send SMS via Twilio
     if (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && ADMIN_PHONE_NUMBER) {

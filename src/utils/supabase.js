@@ -169,7 +169,7 @@ export async function sendOrderNotification(order, userEmail) {
       bottleType: order.bottle_type,
       quantity: order.quantity,
       deliveryAddress: order.delivery_address,
-      deliveryDate: order.preferred_delivery_date,
+      deliveryDate: order.delivery_date,
       orderDate: new Date(order.created_at).toLocaleDateString(),
       userEmail: userEmail,
       userPhone: userPhone,
@@ -183,7 +183,7 @@ export async function sendOrderNotification(order, userEmail) {
 
 Order ID: #${order.id.substring(0, 8)}
 📦 ${order.quantity}x ${order.bottle_type}
-📅 Delivery: ${order.preferred_delivery_date}
+📅 Delivery: ${order.delivery_date}
 📍 Address: ${order.delivery_address}
 
 Thank you for your order!
@@ -245,7 +245,7 @@ Thank you for your order!
                   </div>
                   <div class="detail-row">
                     <span class="detail-label">Preferred Delivery Date:</span>
-                    <span>${order.preferred_delivery_date}</span>
+                    <span>${order.delivery_date}</span>
                   </div>
                   <div class="detail-row">
                     <span class="detail-label">Order Date:</span>
@@ -298,7 +298,7 @@ Thank you for your order!
                     <p><span class="label">Bottle Type:</span> ${order.bottle_type}</p>
                     <p><span class="label">Quantity:</span> ${order.quantity} bottles</p>
                     <p><span class="label">Delivery Address:</span> ${order.delivery_address}</p>
-                    <p><span class="label">Preferred Delivery Date:</span> ${order.preferred_delivery_date}</p>
+                    <p><span class="label">Preferred Delivery Date:</span> ${order.delivery_date}</p>
                     <p><span class="label">Order Time:</span> ${new Date(order.created_at).toLocaleString()}</p>
                   </div>
                   <p><strong>Action Required:</strong> Please contact the customer to confirm delivery details.</p>
@@ -328,7 +328,7 @@ Thank you for your order!
 Order ID: ${order.id.substring(0, 8)}
 Bottle: ${order.bottle_type}
 Qty: ${order.quantity}
-Date: ${order.preferred_delivery_date}
+Date: ${order.delivery_date}
 Customer: ${userEmail}
 Address: ${order.delivery_address.substring(0, 50)}${order.delivery_address.length > 50 ? '...' : ''}`;
 

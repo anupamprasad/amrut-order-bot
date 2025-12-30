@@ -200,8 +200,15 @@ async function handleConfirmation(userId, message) {
   // Create the order
   const supabaseUserId = getAuthenticatedUserId(userId);
   
+  if (!supabaseUserId) {
+    return {
+      response: `❌ Authentication error. Please login again.\n\nType 'menu' to return to main menu.`,
+      showMenu: true,
+    };
+  }
+  
   const orderData = {
-    user_id: userId,
+    user_id: supabaseUserId,
     bottle_type: sessionStore.getTempData(userId, 'bottleType'),
     quantity: sessionStore.getTempData(userId, 'quantity'),
     delivery_address: sessionStore.getTempData(userId, 'deliveryAddress'),
